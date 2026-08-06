@@ -1,5 +1,4 @@
 package fr.theosykas.organisation.services;
-import fr.theosykas.organisation.RolesChecker;
 import fr.theosykas.organisation.model.MemberOrganisation;
 import fr.theosykas.organisation.model.Organisation;
 import fr.theosykas.organisation.model.Roles;
@@ -18,15 +17,9 @@ public class OrganisationMemberService {
 		this.organisationService = organisationService;
 	}
 
-	private final RolesChecker requiredAdminRoles = new RolesChecker(Roles.ADMIN);
-	private final RolesChecker requiredReaderRoles = new RolesChecker(Roles.READER);
-	private final RolesChecker requiredModeratorRoles = new RolesChecker(Roles.MODERATOR);
-	private final RolesChecker requiredWriterRoles = new RolesChecker(Roles.WRITER);
-
 	@Transactional
-	public MemberOrganisation addMemberToOrganisation(Long orgId, String memberName, Roles newRoles, Roles roleOfMember) {
+	public MemberOrganisation addMemberToOrganisation(Long orgId, String memberName, Roles newRoles) {
 		Organisation organisation = organisationService.getOrgById(orgId);
-		requiredAdminRoles.check(roleOfMember);
 
 		MemberOrganisation addMember = new MemberOrganisation();
 		addMember.setOrganisation(organisation);
@@ -36,9 +29,8 @@ public class OrganisationMemberService {
 	}
 
 	@Transactional
-	public void delMemberOganisation(Long orgId, String memberName, Roles roleOfMember) {
+	public void delMemberOganisation(Long orgId, String memberName) {
 		Organisation organisation = organisationService.getOrgById(orgId);
-		requiredModeratorRoles.check(roleOfMember);
 
 		MemberOrganisation removeMember = memberRepository.findByNameAndOrganisation(memberName, organisation)
 		.orElseThrow (() -> new RuntimeException("Error member cannot find: " + memberName));

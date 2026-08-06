@@ -6,17 +6,17 @@ import fr.theosykas.organisation.repository.OrganisationRepository;
 import fr.theosykas.organisation.repository.MemberRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
-import fr.theosykas.organisation.RolesChecker;
+// import fr.theosykas.organisation.RolesChecker;
 
 @Service
 public class OrganisationService {
 	private final OrganisationRepository organisationRepository;  // securise et sait ou agir sans jamais changer
 	private final MemberRepository memberRepository;
 
-	private final RolesChecker requiredAdminRoles = new RolesChecker(Roles.ADMIN);
+	// private final RolesChecker requiredAdminRoles = new RolesChecker(Roles.ADMIN);
 	// private final RolesChecker requiredReaderRoles = new RolesChecker(Roles.READER);
-	private final RolesChecker requiredModeratorRoles = new RolesChecker(Roles.MODERATOR);
-	private final RolesChecker requiredWriterRoles = new RolesChecker(Roles.WRITER);
+	// private final RolesChecker requiredModeratorRoles = new RolesChecker(Roles.MODERATOR);
+	// private final RolesChecker requiredWriterRoles = new RolesChecker(Roles.WRITER);
 
 	public OrganisationService(OrganisationRepository organisationRepository, MemberRepository memberRepository) {
 		this.organisationRepository = organisationRepository;
@@ -46,17 +46,15 @@ public class OrganisationService {
 	}
 
 	@Transactional
-	public Organisation updateOranisation(Long orgId, String orgName, Roles roleOfMember) {
+	public Organisation updateOranisation(Long orgId, String orgName) {
 		Organisation update_org = getOrgById(orgId);
-		requiredWriterRoles.check(roleOfMember);
 
 		update_org.setName(orgName);
 		return organisationRepository.save(update_org);
 	}
 
-	@Transactional // return void
-	public void deleteOrganisation(Long orgId, String orgName, Roles roleOfMember) {
-		requiredAdminRoles.check(roleOfMember);
+	@Transactional
+	public void deleteOrganisation(Long orgId, String orgName) {
 		organisationRepository.delete(getOrgById(orgId));
 	}
 }
