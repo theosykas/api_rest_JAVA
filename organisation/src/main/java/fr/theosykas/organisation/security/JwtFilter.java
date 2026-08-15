@@ -1,9 +1,9 @@
-package fr.theosykas.organisation;
+package fr.theosykas.organisation.security;
 
 import org.springframework.stereotype.Component;
 
 @Component
-public class GetUser {
+public class JwtFilter {
 	public String extractTokenHeader() {
 		return null;
 	}

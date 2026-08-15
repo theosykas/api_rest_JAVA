@@ -1,4 +1,4 @@
-package fr.theosykas.organisation;
+package fr.theosykas.organisation.security;
 import fr.theosykas.organisation.model.Roles;
 import java.util.List;
 

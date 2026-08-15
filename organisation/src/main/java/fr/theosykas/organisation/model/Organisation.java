@@ -10,7 +10,7 @@ import lombok.Setter;
 @Entity
 @Getter
 @Setter
-@Table(name = "Organisation")  // __tablename__
+@Table(name = "organisation")  // __tablename__
 public class Organisation {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY) // + 1 -> line
