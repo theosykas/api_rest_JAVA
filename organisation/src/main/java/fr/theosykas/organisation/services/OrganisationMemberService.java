@@ -50,7 +50,7 @@ public class OrganisationMemberService {
 	public MemberOrganisation updateRoles(Long orgId, Long userId, Roles roleOfMember) {
 		MemberOrganisation member = getMember(orgId, userId);
 		// seulement si op == retirer un admin ou retrograder un admin
-		if (member.getRole() != Roles.ADMIN) {
+		if (roleOfMember != Roles.ADMIN) {
 			ensureNotLastAdmin(orgId, member);
 		}
 

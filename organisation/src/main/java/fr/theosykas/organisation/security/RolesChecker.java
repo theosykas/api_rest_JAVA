@@ -1,17 +1,16 @@
 package fr.theosykas.organisation.security;
 import fr.theosykas.organisation.model.Roles;
-import java.util.List;
 
 public class RolesChecker {
-	private final List<Roles> allowedRoles;
+	private final Roles minimumRoles;
 
-	public RolesChecker(Roles ... roles) {
-		this.allowedRoles = List.of(roles);
+	public RolesChecker(Roles minimumRole) {
+		this.minimumRoles = minimumRole;
 	}
 
-	public void check(Roles userRoles) {
-		if (!allowedRoles.contains(userRoles)) {
-			throw new RuntimeException("you don't have permission " + userRoles);
+	public void check(Roles callerRole) {
+		if (!callerRole.atLeast(minimumRoles)) {
+			throw new RuntimeException("you don't have permission " + callerRole);
 		}
 	}
 }
