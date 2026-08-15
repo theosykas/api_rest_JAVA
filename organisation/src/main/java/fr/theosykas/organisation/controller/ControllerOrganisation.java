@@ -7,7 +7,7 @@ import fr.theosykas.organisation.model.Roles;
 import fr.theosykas.organisation.services.OrganisationMemberService;
 import fr.theosykas.organisation.services.OrganisationService;
 import org.springframework.http.HttpStatus;
-import fr.theosykas.organisation.exception.InvalidOrganisationException;
+import fr.theosykas.organisation.exception.TokenInvalidException;
 
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
@@ -41,12 +41,17 @@ public class ControllerOrganisation {
 
 
 	private Long callerJwt(Jwt jwt) {
+		if (jwt == null) {
+			throw new TokenInvalidException(
+				"No authenticated user"
+			);
+		}
 		try {
 			return Long.valueOf(jwt.getSubject());
 		}
 		catch (NumberFormatException e) {
-			throw new InvalidOrganisationException(
-				"Invalid subject in token" + jwt.getSubject()
+			throw new TokenInvalidException(
+				"Invalid subject in token"
 			);
 		}
 	}
