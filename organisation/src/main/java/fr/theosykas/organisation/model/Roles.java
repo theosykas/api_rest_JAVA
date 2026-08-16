@@ -21,12 +21,3 @@ public enum Roles {
 // admin a forcememnt le droit 
 
 // un containns lui va juste check l'actuelle ici on pondere 
-
-// seuil = MODERATOR (3)
-//                       │
-//    READER  WRITER  MODERATOR  ADMIN
-//      (1)     (2)      (3)      (4)
-//       │       │        │        │
-//       ✗       ✗        ▓▓▓▓▓▓▓▓▓▓▓   ← autorises
-//                        └────────┘
-//                     tout ce qui est >= 3

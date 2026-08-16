@@ -6,8 +6,9 @@ import fr.theosykas.organisation.model.MemberOrganisation;
 import fr.theosykas.organisation.model.Roles;
 import fr.theosykas.organisation.services.OrganisationMemberService;
 import fr.theosykas.organisation.services.OrganisationService;
-import org.springframework.http.HttpStatus;
 import fr.theosykas.organisation.exception.TokenInvalidException;
+import fr.theosykas.organisation.exception.RolesCheckerExcpetion;
+import org.springframework.http.HttpStatus;
 
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
@@ -74,8 +75,8 @@ public class ControllerOrganisation {
 		@AuthenticationPrincipal Jwt jwt
 	) {
 		Long getAuthId = callerJwt(jwt);
-		Roles requiredRole = memberService.getRole(orgId, getAuthId);  // le role est relu en db infalsifiable (JWT)
-		requiredAdminRoles.check(requiredRole);
+		Roles callerRole = memberService.getRole(orgId, getAuthId);  // le role est relu en db infalsifiable (JWT)
+		requiredAdminRoles.check(callerRole);
 
 		organisationService.deleteOrganisation(orgId);
 	}
@@ -91,8 +92,13 @@ public class ControllerOrganisation {
 		@AuthenticationPrincipal Jwt jwt
 	) {
 		Long getAuthId = callerJwt(jwt);
-		Roles requiredRole = memberService.getRole(orgId, getAuthId);
-		requiredModeratorRoles.check(requiredRole);
+		Roles callerRole = memberService.getRole(orgId, getAuthId);
+		requiredModeratorRoles.check(callerRole);  // admin peut ajouter - Roles.java + checker
+		if (!callerRole.atLeast(roleOfUser)) {
+			throw new RolesCheckerExcpetion(
+				"Cannot grant a role higher than your own"
+			);
+		}
 		return memberService.addMemberToOrganisation(orgId, userId, nameUser, roleOfUser);
 	}
 
@@ -104,8 +110,8 @@ public class ControllerOrganisation {
 		@AuthenticationPrincipal Jwt jwt
 	) {
 		Long getAuthId = callerJwt(jwt);
-		Roles requiredRole = memberService.getRole(orgId, getAuthId);
-		requiredAdminRoles.check(requiredRole);
+		Roles callerRole = memberService.getRole(orgId, getAuthId);
+		requiredAdminRoles.check(callerRole);
 
 		memberService.delMemberOganisation(orgId, userId);
 	}
