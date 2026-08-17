@@ -37,10 +37,6 @@ public class ControllerOrganisation {
 	private final RolesChecker requiredAdminRoles = new RolesChecker(Roles.ADMIN);
 	private final RolesChecker requiredModeratorRoles = new RolesChecker(Roles.MODERATOR);
 
-	// private final RolesChecker requiredReaderRoles = new RolesChecker(Roles.READER);
-	// private final RolesChecker requiredWriterRoles = new RolesChecker(Roles.WRITER);
-
-
 	private Long callerJwt(Jwt jwt) {
 		if (jwt == null) {
 			throw new TokenInvalidException(
