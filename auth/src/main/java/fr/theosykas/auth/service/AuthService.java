@@ -22,26 +22,26 @@ public class AuthService {
 	private final JwtUtils jwtUtils;
 	private final AuthenticationManager authenticationManager;
 
-	public User userRegister(String firstName, String lastName, String password, String mail) {
-		if (userRepository.findByMail(firstName).isPresent()) {
-			throw new RuntimeException("User already exist " + firstName);
+	public User userRegister(String mail, String firstName, String lastName, String password) {
+		if (userRepository.findByMail(mail).isPresent()) {
+			throw new RuntimeException("User already exist " + mail);
 		}
 		User newUser = new User();
+		newUser.setMail(mail);
 		newUser.setFirstName(firstName);
 		newUser.setLastName(lastName);
-		newUser.setMail(mail);
 		newUser.setPassword(passwordEncoder.encode(password));
 		return userRepository.save(newUser);
 	}
 
-	public String userLogin(String username, String password) {
+	public String userLogin(String mail, String password) {
 		Authentication authentication = authenticationManager.authenticate(
-			new UsernamePasswordAuthenticationToken(username, password)
+			new UsernamePasswordAuthenticationToken(mail, password)
 		);
 		if (authentication.isAuthenticated()) {
-			User user = userRepository.findByMail(username)
+			User user = userRepository.findByMail(mail)
 				.orElseThrow(() -> new UsernameNotFoundException(
-					"User not found " + username)
+					"User not found " + mail)
 			);
 			return jwtUtils.generatedToken(user.getId(), user.getMail());
 		}

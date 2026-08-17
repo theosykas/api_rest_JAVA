@@ -24,10 +24,10 @@ public class CustomUserDetailService implements UserDetailsService{
 	// }
 
 	@Override
-	public UserDetails loadUserByUsername(String username) {
-		User user = userRepository.findByMail(username)
+	public UserDetails loadUserByUsername(String mail) {
+		User user = userRepository.findByMail(mail)
 			.orElseThrow(() -> new UsernameNotFoundException(
-				"username not found " + username)
+				"username not found " + mail)
 			);
 		return new org.springframework.security.core.userdetails.User(
 			user.getMail(),
@@ -35,3 +35,13 @@ public class CustomUserDetailService implements UserDetailsService{
 			List.of());
 	}
 }
+
+
+// http://localhost:8081/api/auth/login?mail=theosykas.code@gmail.com&password=Iaizeles
+
+// http://localhost:8081/api/auth/register?mail=theosykas@gmail.com&firstName=theo&lastName=sykas&password=hello
+
+
+// http://localhost:8081/api/auth/login?mail=theo@gmail.com&password=coucou
+
+//  http://localhost:8081/api/auth/register?mail=theo@gmail.com&firstName=theo&lastName=sykas&password=coucou

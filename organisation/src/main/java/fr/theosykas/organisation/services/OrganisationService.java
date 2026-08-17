@@ -40,6 +40,7 @@ public class OrganisationService {
 		MemberOrganisation newMemberAdmin = new MemberOrganisation();
 		newMemberAdmin.setOrganisation(create_organisation);
 		newMemberAdmin.setUserId(userId);
+		newMemberAdmin.setName("admin");
 		newMemberAdmin.setRole(Roles.ADMIN);
 		memberRepository.save(newMemberAdmin);
 		return create_organisation;

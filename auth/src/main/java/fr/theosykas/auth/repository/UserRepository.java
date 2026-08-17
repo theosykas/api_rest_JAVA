@@ -7,5 +7,5 @@ import fr.theosykas.auth.model.User;
 
 
 public interface UserRepository extends JpaRepository<User, Long>{
-	Optional<User> findByMail(String username);
+	Optional<User> findByMail(String mail);
 }
