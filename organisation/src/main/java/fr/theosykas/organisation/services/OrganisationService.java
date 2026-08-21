@@ -6,6 +6,8 @@ import fr.theosykas.organisation.repository.OrganisationRepository;
 import fr.theosykas.organisation.repository.MemberRepository;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.stereotype.Service;
+
+import fr.theosykas.organisation.dto.OrganisationRequest;
 import fr.theosykas.organisation.exception.InvalidOrganisationException;
 import fr.theosykas.organisation.exception.OrganisationNotFound;
 
@@ -28,13 +30,13 @@ public class OrganisationService {
 	}
 
 	@Transactional
-	public Organisation createOrganisation(String orgName, Long userId) {
-		if (orgName == null || orgName.isBlank()) {
+	public Organisation createOrganisation(OrganisationRequest request, Long userId) {
+		if (request.getOrgName() == null || request.getOrgName().isBlank()) {
 			throw new InvalidOrganisationException("Error Organisation name is empty");
 		}
 		Organisation newOrganisation = new Organisation();
 
-		newOrganisation.setName(orgName.trim());
+		newOrganisation.setName(request.getOrgName().trim());
 		Organisation create_organisation = organisationRepository.save(newOrganisation);
 
 		MemberOrganisation newMemberAdmin = new MemberOrganisation();

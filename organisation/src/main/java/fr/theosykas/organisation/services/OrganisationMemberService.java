@@ -6,7 +6,8 @@ import fr.theosykas.organisation.repository.MemberRepository;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.stereotype.Service;
 import fr.theosykas.organisation.exception.MemberAlreadyInOrganisation;
-import fr.theosykas.organisation.exception.UserNotFounfInOrganisation;
+import fr.theosykas.organisation.exception.UserNotFoundInOrganisation;
+import fr.theosykas.organisation.dto.OrganisationMemberRequest;
 import fr.theosykas.organisation.exception.InvalidOrganisationException;
 import java.util.List;
 
@@ -22,18 +23,18 @@ public class OrganisationMemberService {
 	}
 
 	@Transactional
-	public MemberOrganisation addMemberToOrganisation(Long orgId, Long userId, String displayName, Roles newRoles) {
+	public MemberOrganisation addMemberToOrganisation(Long orgId, Long userId, OrganisationMemberRequest request) {
 		Organisation organisation = organisationService.getOrgById(orgId);
 
 		if (memberRepository.existsByOrganisationIdAndUserId(orgId, userId)) {
-			throw new MemberAlreadyInOrganisation("User " + userId + " is already in organisation " + orgId);
+			throw new MemberAlreadyInOrganisation("User " + userId + " is already in organisation " + userId);
 		}
 
 		MemberOrganisation addMember = new MemberOrganisation();
 		addMember.setOrganisation(organisation);
 		addMember.setUserId(userId);
-		addMember.setName(displayName);
-		addMember.setRole(newRoles);
+		addMember.setName(request.getDisplayName());
+		addMember.setRole(request.getRoleOfMember());
 		return memberRepository.save(addMember);
 	}
 
@@ -47,14 +48,14 @@ public class OrganisationMemberService {
 	}
 
 	@Transactional
-	public MemberOrganisation updateRoles(Long orgId, Long userId, Roles roleOfMember) {
+	public MemberOrganisation updateRoles(Long orgId, Long userId, OrganisationMemberRequest request) {
 		MemberOrganisation member = getMember(orgId, userId);
 		// seulement si op == retirer un admin ou retrograder un admin
-		if (roleOfMember != Roles.ADMIN) {
+		if (request.getRoleOfMember() != Roles.ADMIN) {
 			ensureNotLastAdmin(orgId, member);
 		}
 
-		member.setRole(roleOfMember);
+		member.setRole(request.getRoleOfMember());
 		return member;
 	}
 
@@ -73,7 +74,7 @@ public class OrganisationMemberService {
 	@Transactional(readOnly = true)
 	public MemberOrganisation getMember(Long orgId, Long userId) {
 		return memberRepository.findByOrganisationIdAndUserId(orgId, userId)
-			.orElseThrow(() -> new UserNotFounfInOrganisation(
+			.orElseThrow(() -> new UserNotFoundInOrganisation(
 				"User " + userId + " not found in organisation " + orgId));
 	}
 

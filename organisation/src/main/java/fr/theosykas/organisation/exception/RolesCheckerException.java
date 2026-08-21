@@ -4,8 +4,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
 @ResponseStatus(HttpStatus.FORBIDDEN)
-public class RolesCheckerExcpetion extends RuntimeException {
-	public RolesCheckerExcpetion(String msg) {
+public class RolesCheckerException extends RuntimeException {
+	public RolesCheckerException(String msg) {
 		super(msg);
 	}
 }

@@ -6,8 +6,11 @@ import fr.theosykas.organisation.model.MemberOrganisation;
 import fr.theosykas.organisation.model.Roles;
 import fr.theosykas.organisation.services.OrganisationMemberService;
 import fr.theosykas.organisation.services.OrganisationService;
+import jakarta.validation.Valid;
 import fr.theosykas.organisation.exception.TokenInvalidException;
-import fr.theosykas.organisation.exception.RolesCheckerExcpetion;
+import fr.theosykas.organisation.dto.OrganisationMemberRequest;
+import fr.theosykas.organisation.dto.OrganisationRequest;
+import fr.theosykas.organisation.exception.RolesCheckerException;
 import org.springframework.http.HttpStatus;
 
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -16,7 +19,8 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.oauth2.jwt.Jwt;
 
@@ -56,12 +60,12 @@ public class ControllerOrganisation {
 	@PostMapping
 	@ResponseStatus(HttpStatus.CREATED)
 	public Organisation createOrganisation(
-		@RequestParam String orgName,
+		@Valid @RequestBody OrganisationRequest request,
 		@AuthenticationPrincipal Jwt jwt
 	) {
 		Long getAuthId = callerJwt(jwt);
 
-		return organisationService.createOrganisation(orgName, getAuthId);
+		return organisationService.createOrganisation(request, getAuthId);
 	}
 
 	@DeleteMapping("{orgId}")
@@ -78,29 +82,28 @@ public class ControllerOrganisation {
 	}
 
 
-	@PostMapping("{orgId}/users")
+	@PutMapping("{orgId}/users/{userId}")
 	@ResponseStatus(HttpStatus.CREATED)
-	public MemberOrganisation addUserFromOrganisation(
+	public MemberOrganisation addUserToOrganisation(
 		@PathVariable Long orgId,
-		@RequestParam Long userId,
-		@RequestParam(required = false) String nameUser,
-		@RequestParam Roles roleOfUser,
+		@PathVariable Long userId,
+		@Valid @RequestBody OrganisationMemberRequest request,
 		@AuthenticationPrincipal Jwt jwt
 	) {
 		Long getAuthId = callerJwt(jwt);
 		Roles callerRole = memberService.getRole(orgId, getAuthId);
 		requiredModeratorRoles.check(callerRole);  // admin peut ajouter - Roles.java + checker
-		if (!callerRole.atLeast(roleOfUser)) {
-			throw new RolesCheckerExcpetion(
+		if (!callerRole.atLeast(request.getRoleOfMember())) {
+			throw new RolesCheckerException(
 				"Cannot grant a role higher than your own"
 			);
 		}
-		return memberService.addMemberToOrganisation(orgId, userId, nameUser, roleOfUser);
+		return memberService.addMemberToOrganisation(orgId, userId, request);
 	}
 
 	@DeleteMapping("{orgId}/users/{userId}")
 	@ResponseStatus(HttpStatus.NO_CONTENT)
-	public void removeUserFromOrganisation(
+	public void delMemberOrganisation(
 		@PathVariable Long orgId,
 		@PathVariable Long userId,
 		@AuthenticationPrincipal Jwt jwt
@@ -112,3 +115,7 @@ public class ControllerOrganisation {
 		memberService.delMemberOganisation(orgId, userId);
 	}
 }
+
+
+// Long callerId = callerJwt(jwt);                  // JWT signé → il ne peut pas mentir
+// Roles callerRole = memberService.getRole(orgId, callerId);  // relu en DB

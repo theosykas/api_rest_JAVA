@@ -5,10 +5,15 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import fr.theosykas.auth.service.AuthService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.GetMapping;
-import fr.theosykas.auth.model.User;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RequestBody;
+
+import fr.theosykas.auth.dto.LoginRequest;
+import fr.theosykas.auth.dto.RegisterRequest;
+import fr.theosykas.auth.dto.UserResponse;
+
+import org.springframework.web.bind.annotation.PostMapping;
 
 
 @RestController
@@ -18,29 +23,28 @@ public class AuthController {
 
 	private final AuthService authService;
 
-	@GetMapping("/register")
-	public ResponseEntity<User> register(
-		@RequestParam String mail,
-		@RequestParam String firstName,
-		@RequestParam String lastName,
-		@RequestParam String password) 
-	{
-		User newUser = authService.userRegister(
-			mail,
-			firstName,
-			lastName,
-			password
-		);
-		return ResponseEntity.ok(newUser);
+	@PostMapping("/register")
+	public UserResponse register(
+		@Valid @RequestBody RegisterRequest request)
+		{
+		return authService.userRegister(request);
 	}
 
-	@GetMapping("/login")
+	@PostMapping("/login")
 	public ResponseEntity<String> login(
-		@RequestParam String mail,
-		@RequestParam String password) {
+		@Valid @RequestBody LoginRequest request) {
 		String token = authService.userLogin(
-			mail, password
+			request
 		);
 		return ResponseEntity.ok(token);
+		//  cet objet devient le JSON de la reponse
 	}
 }
+
+// javascript formulaire fontend
+// {
+//     "mail": "miry@gmail.com",
+//     "firstName": "Miry",
+//     "lastName": "Bechade",
+//     "password": "Ieiazeles06!"
+// }
